@@ -41,6 +41,7 @@
     .text-white { color: #fff; }
     .text-blue-800 { color: #1e40af; }
     .text-purple-600 { color: #7e22ce; }
+    .text-purple-800 { color: #5b21b6; }
     .text-green-600 { color: #15803d; }
     .text-red-600 { color: #dc2626; }
     .bg-yellow-200 { background-image: url('https://th.bing.com/th/id/OIP.UnAOM9LIEO3PUbW_li3aOgHaHa?rs=1&pid=ImgDetMain'); }
@@ -49,6 +50,7 @@
     .bg-green-500 { background-color: #22c55e; }
     .bg-green-400 { background-color: #4ade80; }
     .bg-gray-200 { background-color: #e5e7eb; }
+    .bg-purple-600 { background-color: #7e22ce; }
     .border-4 { border-width: 4px; }
     .border-purple-400 { border-color: #c084fc; }
     .rounded-lg { border-radius: 0.5rem; }
@@ -56,11 +58,11 @@
     .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
     .overflow-hidden { overflow: hidden; }
     .hover\:bg-green-600:hover { background-color: #16a34a; }
-    .hover\:bg-purple-600:hover { background-color: #6b21a8; }
+    .hover\:bg-purple-700:hover { background-color: #6b21a8; }
     .hover\:bg-opacity-80:hover { opacity: 0.8; }
 
     /* Custom Styles */
-    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;800&display=swap');
 
     .option-btn { 
       display: flex; align-items: center; justify-content: center; padding: 8px; 
@@ -77,6 +79,7 @@
       background-color: #fef08a; /* Fallback color */
       position: relative; 
       border-radius: 16px; 
+      padding: 1.5rem;
     }
     #nextBtn.hidden, #viewAnswersBtn.hidden { display: none; }
     .balloons { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
@@ -102,7 +105,7 @@
       border-radius: 10px; overflow: hidden; margin-bottom: 16px; position: relative; 
     }
     .progress-bar { 
-      height: 100%; background: #4ade80; transition: width 0.3s ease; 
+      height: 100%; background: #4ade80; transition: width: 0.3s ease; 
       border-radius: 10px; 
     }
     .progress-text { 
@@ -113,20 +116,31 @@
       font-size: 1.125rem; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; 
       text-align: center; 
     }
+    #options {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .table-scroll-container {
+      width: 100%;
+      max-height: 400px;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
     .answers-table { 
-      width: 100%; max-width: 450px; border-collapse: collapse; margin-bottom: 1rem; 
+      width: 100%; max-width: 650px; border-collapse: collapse; margin: 0 auto 1rem; 
     }
     .answers-table th, .answers-table td { 
-      border: 1px solid #c084fc; padding: 8px; text-align: left; font-size: 0.875rem; 
+      border: 2px solid #c084fc; padding: 12px; text-align: left; font-size: 1.125rem; 
+      font-weight: 800; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); 
     }
-    .answers-table th { background-color: #f9a8d4; font-weight: 700; }
+    .answers-table th { background-color: #ec4899; }
     .answers-table td { background-color: #ffffff; }
     .correct { color: #15803d; }
     .incorrect { color: #dc2626; }
   </style>
 </head>
 <body class="bg-yellow-200 flex items-center justify-center min-h-screen">
-  <div class="game-container mx-auto p-6 shadow-xl border-4 border-purple-400 flex flex-col items-center">
+  <div class="game-container mx-auto shadow-xl border-4 border-purple-400 flex flex-col items-center">
     <h1 class="text-3xl font-bold text-purple-600 mb-4">Aquarium Time Adventure!</h1>
     <div class="flex justify-center mb-4">
       <span id="stars" class="text-2xl" aria-label="Stars earned"></span>
@@ -137,14 +151,55 @@
     </div>
     <div id="timer" class="timer" role="timer" aria-live="off"></div>
     <div id="puzzle" class="text-xl text-center text-blue-800 mb-4 px-4" role="region" aria-live="polite"></div>
-    <div id="options" class="grid grid-cols-1 gap-2 mb-4 w-full max-w-xs"></div>
+    <div id="options" class="grid grid-cols-1 gap-2 mb-4 w-full"></div>
     <div id="feedback" class="text-center text-xl mb-4 text-blue-800" role="alert" aria-live="assertive"></div>
     <div class="flex gap-2 w-full max-w-xs">
       <button id="nextBtn" class="hidden w-full bg-green-500 text-white text-xl py-2 rounded-lg hover:bg-green-600">Play Again!</button>
-      <button id="viewAnswersBtn" class="hidden w-full bg-purple-600 text-white text-xl py-2 rounded-lg hover:bg-purple-600">View Answers</button>
+      <button id="viewAnswersBtn" class="hidden w-full bg-purple-600 text-white text-xl py-2 rounded-lg hover:bg-purple-700">View Answers</button>
     </div>
     <div id="balloons" class="balloons"></div>
   </div>
+
+  <script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+          var firstSheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[firstSheetName];
+
+          // Convert sheet to JSON to filter blank rows
+          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+          // Filter out blank rows (rows where all cells are empty, null, or undefined)
+          var filteredData = jsonData.filter(row => row.some(filledCell));
+
+          // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+          var headerRowIndex = filteredData.findIndex((row, index) =>
+            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+          );
+          // Fallback
+          if (headerRowIndex === -1 || headerRowIndex > 25) {
+            headerRowIndex = 0;
+          }
+
+          // Convert filtered JSON back to CSV
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+          return csv;
+        } catch (e) {
+          console.error(e);
+          return "";
+        }
+      }
+      return gk_fileData[filename] || "";
+    }
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -575,6 +630,19 @@
           }, 1500);
         } catch (e) {
           console.error('Error in checkAnswer:', e);
+          const feedbackDiv = document.getElementById('feedback');
+          if (feedbackDiv) {
+            feedbackDiv.textContent = 'Oops! Something went wrong. Moving to next puzzle...';
+            feedbackDiv.className = 'text-center text-xl text-red-600 font-bold';
+          }
+          setTimeout(() => {
+            currentPuzzle++;
+            if (currentPuzzle >= puzzles.length) {
+              showSummary();
+            } else {
+              displayPuzzle();
+            }
+          }, 1500);
         }
       }
 
@@ -632,6 +700,10 @@
           optionsDiv.innerHTML = '';
           feedbackDiv.innerHTML = '';
 
+          // Create scrollable container for the table
+          const scrollContainer = document.createElement('div');
+          scrollContainer.className = 'table-scroll-container';
+
           // Create table to display answers
           const table = document.createElement('table');
           table.className = 'answers-table';
@@ -653,7 +725,8 @@
               `).join('')}
             </tbody>
           `;
-          optionsDiv.appendChild(table);
+          scrollContainer.appendChild(table);
+          optionsDiv.appendChild(scrollContainer);
 
           // Update feedback to indicate answers are being shown
           feedbackDiv.textContent = 'Your Answers';
