@@ -8,7 +8,7 @@
     /* Tailwind Base (minimal reset) */
     *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
-      font-family: 'Comic Neue', cursive; 
+      font-family: 'Open Sans', sans-serif; 
       line-height: 1.5; 
       -webkit-font-smoothing: antialiased;
     }
@@ -56,10 +56,11 @@
     .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
     .overflow-hidden { overflow: hidden; }
     .hover\:bg-green-600:hover { background-color: #16a34a; }
+    .hover\:bg-purple-600:hover { background-color: #6b21a8; }
     .hover\:bg-opacity-80:hover { opacity: 0.8; }
 
     /* Custom Styles */
-    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
 
     .option-btn { 
       display: flex; align-items: center; justify-content: center; padding: 8px; 
@@ -77,7 +78,7 @@
       position: relative; 
       border-radius: 16px; 
     }
-    #nextBtn.hidden { display: none; }
+    #nextBtn.hidden, #viewAnswersBtn.hidden { display: none; }
     .balloons { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
     .balloon { position: absolute; font-size: 2rem; animation: float 1.5s ease-out forwards; }
     .balloon:nth-child(1) { left: 20%; animation-delay: 0s; }
@@ -112,6 +113,16 @@
       font-size: 1.125rem; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; 
       text-align: center; 
     }
+    .answers-table { 
+      width: 100%; max-width: 450px; border-collapse: collapse; margin-bottom: 1rem; 
+    }
+    .answers-table th, .answers-table td { 
+      border: 1px solid #c084fc; padding: 8px; text-align: left; font-size: 0.875rem; 
+    }
+    .answers-table th { background-color: #f9a8d4; font-weight: 700; }
+    .answers-table td { background-color: #ffffff; }
+    .correct { color: #15803d; }
+    .incorrect { color: #dc2626; }
   </style>
 </head>
 <body class="bg-yellow-200 flex items-center justify-center min-h-screen">
@@ -128,7 +139,10 @@
     <div id="puzzle" class="text-xl text-center text-blue-800 mb-4 px-4" role="region" aria-live="polite"></div>
     <div id="options" class="grid grid-cols-1 gap-2 mb-4 w-full max-w-xs"></div>
     <div id="feedback" class="text-center text-xl mb-4 text-blue-800" role="alert" aria-live="assertive"></div>
-    <button id="nextBtn" class="hidden w-full max-w-xs bg-green-500 text-white text-xl py-2 rounded-lg hover:bg-green-600">Play Again!</button>
+    <div class="flex gap-2 w-full max-w-xs">
+      <button id="nextBtn" class="hidden w-full bg-green-500 text-white text-xl py-2 rounded-lg hover:bg-green-600">Play Again!</button>
+      <button id="viewAnswersBtn" class="hidden w-full bg-purple-600 text-white text-xl py-2 rounded-lg hover:bg-purple-600">View Answers</button>
+    </div>
     <div id="balloons" class="balloons"></div>
   </div>
 
@@ -143,7 +157,7 @@
           answer: "7:45 AM", 
           options: [
             { text: "8:15 AM" },
-            { text: "7:45 AM" }, // Correct, position 2
+            { text: "7:45 AM" },
             { text: "7:15 AM" },
             { text: "8:45 AM" }
           ]
@@ -154,7 +168,7 @@
           options: [
             { text: "3:30 PM" },
             { text: "2:15 PM" },
-            { text: "3:15 PM" }, // Correct, position 3
+            { text: "3:15 PM" },
             { text: "4:00 PM" }
           ]
         },
@@ -165,14 +179,14 @@
             { text: "12:15 PM" },
             { text: "11:25 AM" },
             { text: "12:25 PM" },
-            { text: "12:05 PM" } // Correct, position 4
+            { text: "12:05 PM" }
           ]
         },
         { 
           question: "The aquarium closes at 8:00 PM. If you leave 2 hours and 30 minutes before closing, what time do you leave?", 
           answer: "5:30 PM", 
           options: [
-            { text: "5:30 PM" }, // Correct, position 1
+            { text: "5:30 PM" },
             { text: "6:00 PM" },
             { text: "5:00 PM" },
             { text: "6:30 PM" }
@@ -184,7 +198,7 @@
           options: [
             { text: "3 hours" },
             { text: "3 hours and 30 minutes" },
-            { text: "3 hours and 15 minutes" }, // Correct, position 3
+            { text: "3 hours and 15 minutes" },
             { text: "2 hours and 45 minutes" }
           ]
         },
@@ -193,7 +207,7 @@
           answer: "3:30 PM", 
           options: [
             { text: "3:30 AM" },
-            { text: "3:30 PM" }, // Correct, position 2
+            { text: "3:30 PM" },
             { text: "5:30 PM" },
             { text: "2:30 PM" }
           ]
@@ -204,7 +218,7 @@
           options: [
             { text: "3:45 PM" },
             { text: "4:15 PM" },
-            { text: "4:00 PM" }, // Correct, position 3
+            { text: "4:00 PM" },
             { text: "3:30 PM" }
           ]
         },
@@ -213,7 +227,7 @@
           answer: "1:15 PM", 
           options: [
             { text: "1:25 PM" },
-            { text: "1:15 PM" }, // Correct, position 2
+            { text: "1:15 PM" },
             { text: "1:05 PM" },
             { text: "12:45 PM" }
           ]
@@ -224,7 +238,7 @@
           options: [
             { text: "40 minutes" },
             { text: "50 minutes" },
-            { text: "45 minutes" }, // Correct, position 3
+            { text: "45 minutes" },
             { text: "35 minutes" }
           ]
         },
@@ -233,7 +247,7 @@
           answer: "11:35 AM", 
           options: [
             { text: "11:45 AM" },
-            { text: "11:35 AM" }, // Correct, position 2
+            { text: "11:35 AM" },
             { text: "11:15 AM" },
             { text: "12:00 PM" }
           ]
@@ -244,7 +258,7 @@
           options: [
             { text: "11:15 AM" },
             { text: "10:45 AM" },
-            { text: "11:00 AM" }, // Correct, position 3
+            { text: "11:00 AM" },
             { text: "11:30 AM" }
           ]
         },
@@ -253,7 +267,7 @@
           answer: "8:00 PM", 
           options: [
             { text: "8:00 AM" },
-            { text: "8:00 PM" }, // Correct, position 2
+            { text: "8:00 PM" },
             { text: "6:00 PM" },
             { text: "10:00 PM" }
           ]
@@ -265,7 +279,7 @@
             { text: "10:25 AM" },
             { text: "10:45 AM" },
             { text: "10:15 AM" },
-            { text: "10:35 AM" } // Correct, position 4
+            { text: "10:35 AM" }
           ]
         },
         { 
@@ -273,7 +287,7 @@
           answer: "1 hour and 15 minutes", 
           options: [
             { text: "1 hour and 10 minutes" },
-            { text: "1 hour and 15 minutes" }, // Correct, position 2
+            { text: "1 hour and 15 minutes" },
             { text: "1 hour and 20 minutes" },
             { text: "1 hour and 5 minutes" }
           ]
@@ -284,7 +298,7 @@
           options: [
             { text: "1:20 PM" },
             { text: "1:00 PM" },
-            { text: "1:10 PM" }, // Correct, position 3
+            { text: "1:10 PM" },
             { text: "12:50 PM" }
           ]
         },
@@ -293,7 +307,7 @@
           answer: "5:45 AM", 
           options: [
             { text: "6:15 AM" },
-            { text: "5:45 AM" }, // Correct, position 2
+            { text: "5:45 AM" },
             { text: "5:15 AM" },
             { text: "6:00 AM" }
           ]
@@ -304,7 +318,7 @@
           options: [
             { text: "11:30 AM" },
             { text: "11:00 AM" },
-            { text: "11:20 AM" }, // Correct, position 3
+            { text: "11:20 AM" },
             { text: "11:40 AM" }
           ]
         },
@@ -313,7 +327,7 @@
           answer: "11:15 PM", 
           options: [
             { text: "11:15 AM" },
-            { text: "11:15 PM" }, // Correct, position 2
+            { text: "11:15 PM" },
             { text: "1:15 AM" },
             { text: "9:15 PM" }
           ]
@@ -324,7 +338,7 @@
           options: [
             { text: "3:55 PM" },
             { text: "3:30 PM" },
-            { text: "3:45 PM" }, // Correct, position 3
+            { text: "3:45 PM" },
             { text: "4:00 PM" }
           ]
         },
@@ -333,7 +347,7 @@
           answer: "8:30 PM", 
           options: [
             { text: "8:45 PM" },
-            { text: "8:30 PM" }, // Correct, position 2
+            { text: "8:30 PM" },
             { text: "8:15 PM" },
             { text: "9:00 PM" }
           ]
@@ -342,6 +356,7 @@
 
       // Working copy of puzzles to allow reshuffling
       let puzzles = JSON.parse(JSON.stringify(originalPuzzles));
+      let userAnswers = []; // Array to store user answers and correct answers
 
       const correctFeedback = ["Yay! You got it!", "Awesome job!", "Super star!", "Way to go!"];
       const incorrectFeedback = ["Oops! Try the next one, superstar!", "Nice try, keep going!", "Almost there, try again!", "Don't worry, you're learning!"];
@@ -398,9 +413,10 @@
           const feedbackDiv = document.getElementById('feedback');
           const balloonsDiv = document.getElementById('balloons');
           const nextBtn = document.getElementById('nextBtn');
+          const viewAnswersBtn = document.getElementById('viewAnswersBtn');
 
-          if (!puzzleDiv || !optionsDiv || !feedbackDiv || !balloonsDiv || !nextBtn) {
-            throw new Error('Required DOM elements not found: puzzleDiv, optionsDiv, feedbackDiv, balloonsDiv, or nextBtn');
+          if (!puzzleDiv || !optionsDiv || !feedbackDiv || !balloonsDiv || !nextBtn || !viewAnswersBtn) {
+            throw new Error('Required DOM elements not found');
           }
 
           if (!puzzle || !puzzle.question || !puzzle.options || !Array.isArray(puzzle.options) || puzzle.options.length < 1) {
@@ -412,6 +428,7 @@
           feedbackDiv.textContent = '';
           balloonsDiv.innerHTML = '';
           nextBtn.classList.add('hidden');
+          viewAnswersBtn.classList.add('hidden');
 
           // Shuffle options for display
           const shuffledOptions = shuffleArray([...puzzle.options]);
@@ -527,6 +544,14 @@
           const optionButtons = document.querySelectorAll('#options button');
           if (!feedback || !optionButtons.length) throw new Error('Feedback or buttons not found');
           optionButtons.forEach(btn => btn.disabled = true);
+          
+          // Record user's answer and correct answer
+          userAnswers[currentPuzzle] = {
+            question: puzzle.question,
+            chosen: selected || "No answer (time ran out)",
+            correct: puzzle.answer
+          };
+
           if (selected === puzzle.answer) {
             const randomFeedback = correctFeedback[Math.floor(Math.random() * correctFeedback.length)];
             feedback.textContent = randomFeedback;
@@ -565,8 +590,9 @@
           const progressBar = document.getElementById('progress-bar');
           const progressText = document.getElementById('progress-text');
           const nextBtn = document.getElementById('nextBtn');
+          const viewAnswersBtn = document.getElementById('viewAnswersBtn');
 
-          if (!puzzleDiv || !optionsDiv || !balloonsDiv || !timerDiv || !feedbackDiv || !progressBar || !progressText || !nextBtn) {
+          if (!puzzleDiv || !optionsDiv || !balloonsDiv || !timerDiv || !feedbackDiv || !progressBar || !progressText || !nextBtn || !viewAnswersBtn) {
             throw new Error('Summary elements not found');
           }
 
@@ -582,9 +608,62 @@
           progressBar.setAttribute('aria-label', `Puzzle ${puzzles.length} of ${puzzles.length}`);
           nextBtn.textContent = 'Play Again!';
           nextBtn.classList.remove('hidden');
+          viewAnswersBtn.classList.remove('hidden');
           nextBtn.onclick = playAgain;
+          viewAnswersBtn.onclick = showAnswers;
         } catch (e) {
           console.error('Error in showSummary:', e);
+        }
+      }
+
+      function showAnswers() {
+        try {
+          const puzzleDiv = document.getElementById('puzzle');
+          const optionsDiv = document.getElementById('options');
+          const feedbackDiv = document.getElementById('feedback');
+          const nextBtn = document.getElementById('nextBtn');
+          const viewAnswersBtn = document.getElementById('viewAnswersBtn');
+
+          if (!puzzleDiv || !optionsDiv || !feedbackDiv || !nextBtn || !viewAnswersBtn) {
+            throw new Error('Answer display elements not found');
+          }
+
+          puzzleDiv.textContent = '';
+          optionsDiv.innerHTML = '';
+          feedbackDiv.innerHTML = '';
+
+          // Create table to display answers
+          const table = document.createElement('table');
+          table.className = 'answers-table';
+          table.innerHTML = `
+            <thead>
+              <tr>
+                <th>Puzzle</th>
+                <th>Your Answer</th>
+                <th>Correct Answer</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${userAnswers.map((answer, index) => `
+                <tr>
+                  <td>${index + 1}. ${answer.question}</td>
+                  <td class="${answer.chosen === answer.correct ? 'correct' : 'incorrect'}">${answer.chosen}</td>
+                  <td class="correct">${answer.correct}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          `;
+          optionsDiv.appendChild(table);
+
+          // Update feedback to indicate answers are being shown
+          feedbackDiv.textContent = 'Your Answers';
+          feedbackDiv.className = 'text-center text-2xl text-purple-600 font-bold';
+
+          // Hide View Answers button, keep Play Again button
+          viewAnswersBtn.classList.add('hidden');
+          nextBtn.classList.remove('hidden');
+        } catch (e) {
+          console.error('Error in showAnswers:', e);
         }
       }
 
@@ -596,6 +675,7 @@
             puzzle.options = shuffleArray([...puzzle.options]);
             return puzzle;
           });
+          userAnswers = []; // Reset user answers
           currentPuzzle = 0;
           starsEarned = 0;
           displayPuzzle();
