@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aquarium Time Adventure for Kids</title>
+  <style>
+    /* Tailwind Base (minimal reset) */
+    *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Comic Neue', cursive; 
+      line-height: 1.5; 
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Tailwind Utilities */
+    .min-h-screen { min-height: 100vh; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .gap-2 { gap: 0.5rem; }
+    .w-full { width: 100%; }
+    .max-w-xs { max-width: 20rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .mb-4 { margin-bottom: 1rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .p-2 { padding: 0.5rem; }
+    .text-center { text-align: center; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .font-bold { font-weight: 700; }
+    .text-white { color: #fff; }
+    .text-blue-800 { color: #1e40af; }
+    .text-purple-600 { color: #7e22ce; }
+    .text-green-600 { color: #15803d; }
+    .text-red-600 { color: #dc2626; }
+    .bg-yellow-200 { background-image: url('https://th.bing.com/th/id/OIP.UnAOM9LIEO3PUbW_li3aOgHaHa?rs=1&pid=ImgDetMain'); }
+    .bg-pink-300 { background-color: #f9a8d4; }
+    .bg-teal-300 { background-color: #5eead4; }
+    .bg-green-500 { background-color: #22c55e; }
+    .bg-green-400 { background-color: #4ade80; }
+    .bg-gray-200 { background-color: #e5e7eb; }
+    .border-4 { border-width: 4px; }
+    .border-purple-400 { border-color: #c084fc; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    .overflow-hidden { overflow: hidden; }
+    .hover\:bg-green-600:hover { background-color: #16a34a; }
+    .hover\:bg-opacity-80:hover { opacity: 0.8; }
+
+    /* Custom Styles */
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+    .option-btn { 
+      display: flex; align-items: center; justify-content: center; padding: 8px; 
+      transition: transform 0.2s ease; font-size: 1rem; 
+    }
+    .option-btn:hover { transform: scale(1.05); }
+    .option-btn:active { transform: scale(0.95); }
+    .game-container { 
+      max-width: 500px; 
+      background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), 
+                  url('https://cdn.pixabay.com/photo/2023/06/29/17/36/ai-generated-8097040_1280.png'); 
+      background-size: cover; 
+      background-position: center; 
+      background-color: #fef08a; /* Fallback color */
+      position: relative; 
+      border-radius: 16px; 
+    }
+    #nextBtn.hidden { display: none; }
+    .balloons { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+    .balloon { position: absolute; font-size: 2rem; animation: float 1.5s ease-out forwards; }
+    .balloon:nth-child(1) { left: 20%; animation-delay: 0s; }
+    .balloon:nth-child(2) { left: 40%; animation-delay: 0.2s; }
+    .balloon:nth-child(3) { left: 60%; animation-delay: 0.4s; }
+    .balloon:nth-child(4) { left: 80%; animation-delay: 0.6s; }
+    @keyframes float {
+      0% { transform: translateY(100%); opacity: 1; }
+      100% { transform: translateY(-100%); opacity: 0; }
+    }
+    .sad-face { position: absolute; font-size: 2rem; animation: fall 1.5s ease-out forwards; }
+    .sad-face:nth-child(1) { left: 25%; animation-delay: 0s; }
+    .sad-face:nth-child(2) { left: 50%; animation-delay: 0.2s; }
+    .sad-face:nth-child(3) { left: 75%; animation-delay: 0.4s; }
+    @keyframes fall {
+      0% { transform: translateY(-20%); opacity: 1; }
+      100% { transform: translateY(20%); opacity: 0; }
+    }
+    .progress-bar-container { 
+      width: 100%; max-width: 400px; height: 20px; background: #e5e7eb; 
+      border-radius: 10px; overflow: hidden; margin-bottom: 16px; position: relative; 
+    }
+    .progress-bar { 
+      height: 100%; background: #4ade80; transition: width 0.3s ease; 
+      border-radius: 10px; 
+    }
+    .progress-text { 
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+      font-size: 0.875rem; color: #1e40af; text-align: center; 
+    }
+    .timer { 
+      font-size: 1.125rem; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; 
+      text-align: center; 
+    }
+  </style>
+</head>
+<body class="bg-yellow-200 flex items-center justify-center min-h-screen">
+  <div class="game-container mx-auto p-6 shadow-xl border-4 border-purple-400 flex flex-col items-center">
+    <h1 class="text-3xl font-bold text-purple-600 mb-4">Aquarium Time Adventure!</h1>
+    <div class="flex justify-center mb-4">
+      <span id="stars" class="text-2xl" aria-label="Stars earned"></span>
+    </div>
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+      <span id="progress-text" class="progress-text" aria-hidden="true"></span>
+    </div>
+    <div id="timer" class="timer" role="timer" aria-live="off"></div>
+    <div id="puzzle" class="text-xl text-center text-blue-800 mb-4 px-4" role="region" aria-live="polite"></div>
+    <div id="options" class="grid grid-cols-1 gap-2 mb-4 w-full max-w-xs"></div>
+    <div id="feedback" class="text-center text-xl mb-4 text-blue-800" role="alert" aria-live="assertive"></div>
+    <button id="nextBtn" class="hidden w-full max-w-xs bg-green-500 text-white text-xl py-2 rounded-lg hover:bg-green-600">Play Again!</button>
+    <div id="balloons" class="balloons"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded, initializing game...');
+
+      // Original puzzles with options in varied order (correct answer not always first)
+      const originalPuzzles = [
+        { 
+          question: "The aquarium opens at 9:00 AM. If you arrive 1 hour and 15 minutes early, what time do you get there?", 
+          answer: "7:45 AM", 
+          options: [
+            { text: "8:15 AM" },
+            { text: "7:45 AM" }, // Correct, position 2
+            { text: "7:15 AM" },
+            { text: "8:45 AM" }
+          ]
+        },
+        { 
+          question: "The shark feeding starts at 2:30 PM and lasts 45 minutes. What time does it end?", 
+          answer: "3:15 PM", 
+          options: [
+            { text: "3:30 PM" },
+            { text: "2:15 PM" },
+            { text: "3:15 PM" }, // Correct, position 3
+            { text: "4:00 PM" }
+          ]
+        },
+        { 
+          question: "The dolphin show is at 11:45 AM. If you arrive 20 minutes late, what time do you get there?", 
+          answer: "12:05 PM", 
+          options: [
+            { text: "12:15 PM" },
+            { text: "11:25 AM" },
+            { text: "12:25 PM" },
+            { text: "12:05 PM" } // Correct, position 4
+          ]
+        },
+        { 
+          question: "The aquarium closes at 8:00 PM. If you leave 2 hours and 30 minutes before closing, what time do you leave?", 
+          answer: "5:30 PM", 
+          options: [
+            { text: "5:30 PM" }, // Correct, position 1
+            { text: "6:00 PM" },
+            { text: "5:00 PM" },
+            { text: "6:30 PM" }
+          ]
+        },
+        { 
+          question: "The jellyfish exhibit opens at 10:00 AM and closes at 1:15 PM. How much time is it open?", 
+          answer: "3 hours and 15 minutes", 
+          options: [
+            { text: "3 hours" },
+            { text: "3 hours and 30 minutes" },
+            { text: "3 hours and 15 minutes" }, // Correct, position 3
+            { text: "2 hours and 45 minutes" }
+          ]
+        },
+        { 
+          question: "The aquarium clock shows 15:30 in 24-hour time. What time is this in 12-hour time?", 
+          answer: "3:30 PM", 
+          options: [
+            { text: "3:30 AM" },
+            { text: "3:30 PM" }, // Correct, position 2
+            { text: "5:30 PM" },
+            { text: "2:30 PM" }
+          ]
+        },
+        { 
+          question: "You spend 1 hour and 45 minutes at the coral reef exhibit starting at 2:15 PM. What time do you finish?", 
+          answer: "4:00 PM", 
+          options: [
+            { text: "3:45 PM" },
+            { text: "4:15 PM" },
+            { text: "4:00 PM" }, // Correct, position 3
+            { text: "3:30 PM" }
+          ]
+        },
+        { 
+          question: "The octopus feeding takes 35 minutes and ends at 1:50 PM. What time did it start?", 
+          answer: "1:15 PM", 
+          options: [
+            { text: "1:25 PM" },
+            { text: "1:15 PM" }, // Correct, position 2
+            { text: "1:05 PM" },
+            { text: "12:45 PM" }
+          ]
+        },
+        { 
+          question: "The penguin parade starts at 9:20 AM and ends at 10:05 AM. How much time does it last?", 
+          answer: "45 minutes", 
+          options: [
+            { text: "40 minutes" },
+            { text: "50 minutes" },
+            { text: "45 minutes" }, // Correct, position 3
+            { text: "35 minutes" }
+          ]
+        },
+        { 
+          question: "The sea turtle talk starts at 10:15 AM. If it lasts 1 hour and 20 minutes, what time does it end?", 
+          answer: "11:35 AM", 
+          options: [
+            { text: "11:45 AM" },
+            { text: "11:35 AM" }, // Correct, position 2
+            { text: "11:15 AM" },
+            { text: "12:00 PM" }
+          ]
+        },
+        { 
+          question: "You arrive at the aquarium at 8:45 AM and spend 2 hours and 15 minutes before the dolphin show starts. What time does the show start?", 
+          answer: "11:00 AM", 
+          options: [
+            { text: "11:15 AM" },
+            { text: "10:45 AM" },
+            { text: "11:00 AM" }, // Correct, position 3
+            { text: "11:30 AM" }
+          ]
+        },
+        { 
+          question: "The aquarium’s night tour starts at 20:00 in 24-hour time. What time is this in 12-hour time?", 
+          answer: "8:00 PM", 
+          options: [
+            { text: "8:00 AM" },
+            { text: "8:00 PM" }, // Correct, position 2
+            { text: "6:00 PM" },
+            { text: "10:00 PM" }
+          ]
+        },
+        { 
+          question: "The stingray feeding takes 25 minutes and starts 1 hour and 10 minutes after the aquarium opens at 9:00 AM. What time does it end?", 
+          answer: "10:35 AM", 
+          options: [
+            { text: "10:25 AM" },
+            { text: "10:45 AM" },
+            { text: "10:15 AM" },
+            { text: "10:35 AM" } // Correct, position 4
+          ]
+        },
+        { 
+          question: "The shark tank tour starts at 3:45 PM and ends at 5:00 PM. How much time does it last?", 
+          answer: "1 hour and 15 minutes", 
+          options: [
+            { text: "1 hour and 10 minutes" },
+            { text: "1 hour and 15 minutes" }, // Correct, position 2
+            { text: "1 hour and 20 minutes" },
+            { text: "1 hour and 5 minutes" }
+          ]
+        },
+        { 
+          question: "If you finish watching the jellyfish exhibit at 2:50 PM after spending 1 hour and 40 minutes, what time did you start?", 
+          answer: "1:10 PM", 
+          options: [
+            { text: "1:20 PM" },
+            { text: "1:00 PM" },
+            { text: "1:10 PM" }, // Correct, position 3
+            { text: "12:50 PM" }
+          ]
+        },
+        { 
+          question: "The aquarium’s morning show starts at 7:30 AM. If you arrive 1 hour and 45 minutes early, what time do you get there?", 
+          answer: "5:45 AM", 
+          options: [
+            { text: "6:15 AM" },
+            { text: "5:45 AM" }, // Correct, position 2
+            { text: "5:15 AM" },
+            { text: "6:00 AM" }
+          ]
+        },
+        { 
+          question: "The coral reef dive show is scheduled 2 hours and 20 minutes after the aquarium opens at 9:00 AM. What time does it start?", 
+          answer: "11:20 AM", 
+          options: [
+            { text: "11:30 AM" },
+            { text: "11:00 AM" },
+            { text: "11:20 AM" }, // Correct, position 3
+            { text: "11:40 AM" }
+          ]
+        },
+        { 
+          question: "The aquarium clock shows 23:15 in 24-hour time. What time is this in 12-hour time?", 
+          answer: "11:15 PM", 
+          options: [
+            { text: "11:15 AM" },
+            { text: "11:15 PM" }, // Correct, position 2
+            { text: "1:15 AM" },
+            { text: "9:15 PM" }
+          ]
+        },
+        { 
+          question: "You spend 50 minutes at the penguin exhibit, then 1 hour and 25 minutes at the shark tank, starting at 1:30 PM. What time do you finish?", 
+          answer: "3:45 PM", 
+          options: [
+            { text: "3:55 PM" },
+            { text: "3:30 PM" },
+            { text: "3:45 PM" }, // Correct, position 3
+            { text: "4:00 PM" }
+          ]
+        },
+        { 
+          question: "The aquarium’s last tour starts at 6:45 PM and lasts 1 hour and 15 minutes. If you leave 30 minutes after it ends, what time do you leave?", 
+          answer: "8:30 PM", 
+          options: [
+            { text: "8:45 PM" },
+            { text: "8:30 PM" }, // Correct, position 2
+            { text: "8:15 PM" },
+            { text: "9:00 PM" }
+          ]
+        }
+      ];
+
+      // Working copy of puzzles to allow reshuffling
+      let puzzles = JSON.parse(JSON.stringify(originalPuzzles));
+
+      const correctFeedback = ["Yay! You got it!", "Awesome job!", "Super star!", "Way to go!"];
+      const incorrectFeedback = ["Oops! Try the next one, superstar!", "Nice try, keep going!", "Almost there, try again!", "Don't worry, you're learning!"];
+
+      let currentPuzzle = 0;
+      let starsEarned = 0;
+      let timerInterval = null;
+      const TIME_LIMIT = 15; // 15 seconds per puzzle
+
+      // Function to shuffle an array (Fisher-Yates algorithm)
+      function shuffleArray(array) {
+        try {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        } catch (e) {
+          console.error('Error in shuffleArray:', e);
+          return array; // Return unshuffled array as fallback
+        }
+      }
+
+      function startTimer() {
+        try {
+          let timeLeft = TIME_LIMIT;
+          const timerDiv = document.getElementById('timer');
+          if (!timerDiv) throw new Error('Timer element not found');
+          timerDiv.textContent = `Time left: ${timeLeft}s`;
+          timerDiv.setAttribute('aria-label', `Timer started with ${timeLeft} seconds remaining`);
+          
+          if (timerInterval) clearInterval(timerInterval);
+          
+          timerInterval = setInterval(() => {
+            timeLeft--;
+            timerDiv.textContent = `Time left: ${timeLeft}s`;
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+              timerDiv.setAttribute('aria-label', 'Time expired');
+              checkAnswer(null); // Auto-submit as incorrect
+            }
+          }, 1000);
+        } catch (e) {
+          console.error('Error in startTimer:', e);
+        }
+      }
+
+      function displayPuzzle() {
+        try {
+          console.log(`Attempting to display puzzle ${currentPuzzle + 1}`);
+          const puzzle = puzzles[currentPuzzle];
+          const puzzleDiv = document.getElementById('puzzle');
+          const optionsDiv = document.getElementById('options');
+          const feedbackDiv = document.getElementById('feedback');
+          const balloonsDiv = document.getElementById('balloons');
+          const nextBtn = document.getElementById('nextBtn');
+
+          if (!puzzleDiv || !optionsDiv || !feedbackDiv || !balloonsDiv || !nextBtn) {
+            throw new Error('Required DOM elements not found: puzzleDiv, optionsDiv, feedbackDiv, balloonsDiv, or nextBtn');
+          }
+
+          if (!puzzle || !puzzle.question || !puzzle.options || !Array.isArray(puzzle.options) || puzzle.options.length < 1) {
+            throw new Error(`Invalid or missing puzzle data at index ${currentPuzzle}`);
+          }
+
+          puzzleDiv.textContent = puzzle.question;
+          optionsDiv.innerHTML = '';
+          feedbackDiv.textContent = '';
+          balloonsDiv.innerHTML = '';
+          nextBtn.classList.add('hidden');
+
+          // Shuffle options for display
+          const shuffledOptions = shuffleArray([...puzzle.options]);
+
+          let validOptions = 0;
+          shuffledOptions.forEach((option, index) => {
+            if (!option || typeof option.text !== 'string' || option.text.trim() === '') {
+              console.warn(`Skipping invalid option at puzzle ${currentPuzzle + 1}, index ${index}`);
+              return;
+            }
+            const btn = document.createElement('button');
+            btn.textContent = option.text;
+            btn.className = `option-btn text-base p-2 rounded-lg hover:bg-opacity-80 ${index % 2 === 0 ? 'bg-pink-300' : 'bg-teal-300'}`;
+            btn.setAttribute('aria-describedby', 'puzzle');
+            btn.onclick = () => checkAnswer(option.text);
+            optionsDiv.appendChild(btn);
+            validOptions++;
+          });
+
+          if (validOptions === 0) {
+            throw new Error(`No valid options available for puzzle ${currentPuzzle + 1}`);
+          }
+
+          updateStars();
+          updateProgressBar();
+          startTimer();
+        } catch (e) {
+          console.error(`Error in displayPuzzle for puzzle ${currentPuzzle + 1}:`, e.message);
+          const feedbackDiv = document.getElementById('feedback');
+          if (feedbackDiv) {
+            feedbackDiv.textContent = 'Oops! Something went wrong. Moving to next puzzle...';
+            feedbackDiv.className = 'text-center text-xl text-red-600 font-bold';
+          }
+          setTimeout(() => {
+            currentPuzzle++;
+            if (currentPuzzle >= puzzles.length) {
+              showSummary();
+            } else {
+              displayPuzzle();
+            }
+          }, 1500);
+        }
+      }
+
+      function updateStars() {
+        try {
+          const stars = document.getElementById('stars');
+          if (!stars) throw new Error('Stars element not found');
+          stars.textContent = '⭐'.repeat(starsEarned);
+          stars.setAttribute('aria-label', `Stars earned: ${starsEarned}`);
+        } catch (e) {
+          console.error('Error in updateStars:', e);
+        }
+      }
+
+      function updateProgressBar() {
+        try {
+          const progressBar = document.getElementById('progress-bar');
+          const progressText = document.getElementById('progress-text');
+          if (!progressBar || !progressText) throw new Error('Progress elements not found');
+          const progress = ((currentPuzzle + 1) / puzzles.length) * 100;
+          const progressLabel = `Puzzle ${currentPuzzle + 1} of ${puzzles.length}`;
+          progressBar.style.width = `${progress}%`;
+          progressBar.setAttribute('aria-label', progressLabel);
+          progressText.textContent = progressLabel;
+        } catch (e) {
+          console.error('Error in updateProgressBar:', e);
+        }
+      }
+
+      function showBalloons() {
+        try {
+          const balloonsDiv = document.getElementById('balloons');
+          if (!balloonsDiv) throw new Error('Balloons element not found');
+          balloonsDiv.innerHTML = '';
+          const colors = ['red', 'blue', 'green', 'yellow'];
+          colors.forEach(color => {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.textContent = '🎈';
+            balloon.style.color = color;
+            balloonsDiv.appendChild(balloon);
+          });
+        } catch (e) {
+          console.error('Error in showBalloons:', e);
+        }
+      }
+
+      function showSadFaces() {
+        try {
+          const balloonsDiv = document.getElementById('balloons');
+          if (!balloonsDiv) throw new Error('Balloons element not found');
+          balloonsDiv.innerHTML = '';
+          for (let i = 0; i < 3; i++) {
+            const sadFace = document.createElement('div');
+            sadFace.className = 'sad-face';
+            sadFace.textContent = '😔';
+            sadFace.style.left = `${25 + i * 25}%`;
+            sadFace.style.animationDelay = `${i * 0.2}s`;
+            balloonsDiv.appendChild(sadFace);
+          }
+        } catch (e) {
+          console.error('Error in showSadFaces:', e);
+        }
+      }
+
+      function checkAnswer(selected) {
+        try {
+          console.log('Checking answer:', selected);
+          if (timerInterval) clearInterval(timerInterval); // Stop timer
+          const puzzle = puzzles[currentPuzzle];
+          const feedback = document.getElementById('feedback');
+          const optionButtons = document.querySelectorAll('#options button');
+          if (!feedback || !optionButtons.length) throw new Error('Feedback or buttons not found');
+          optionButtons.forEach(btn => btn.disabled = true);
+          if (selected === puzzle.answer) {
+            const randomFeedback = correctFeedback[Math.floor(Math.random() * correctFeedback.length)];
+            feedback.textContent = randomFeedback;
+            feedback.className = 'text-center text-xl text-green-600 font-bold';
+            starsEarned++;
+            showBalloons();
+          } else {
+            const randomFeedback = incorrectFeedback[Math.floor(Math.random() * incorrectFeedback.length)];
+            feedback.textContent = selected ? randomFeedback : "Time's up! Try the next one!";
+            feedback.className = 'text-center text-xl text-red-600 font-bold';
+            showSadFaces();
+          }
+          updateStars();
+          setTimeout(() => {
+            currentPuzzle++;
+            if (currentPuzzle >= puzzles.length) {
+              showSummary();
+            } else {
+              displayPuzzle();
+            }
+          }, 1500);
+        } catch (e) {
+          console.error('Error in checkAnswer:', e);
+        }
+      }
+
+      function showSummary() {
+        try {
+          console.log('Showing summary');
+          if (timerInterval) clearInterval(timerInterval); // Stop timer
+          const puzzleDiv = document.getElementById('puzzle');
+          const optionsDiv = document.getElementById('options');
+          const balloonsDiv = document.getElementById('balloons');
+          const timerDiv = document.getElementById('timer');
+          const feedbackDiv = document.getElementById('feedback');
+          const progressBar = document.getElementById('progress-bar');
+          const progressText = document.getElementById('progress-text');
+          const nextBtn = document.getElementById('nextBtn');
+
+          if (!puzzleDiv || !optionsDiv || !balloonsDiv || !timerDiv || !feedbackDiv || !progressBar || !progressText || !nextBtn) {
+            throw new Error('Summary elements not found');
+          }
+
+          puzzleDiv.textContent = '';
+          optionsDiv.innerHTML = '';
+          balloonsDiv.innerHTML = '';
+          timerDiv.textContent = '';
+          const starDisplay = '⭐'.repeat(starsEarned);
+          feedbackDiv.innerHTML = `Look at your stars!<br>${starDisplay || 'No stars yet!'}<br>Score: ${starsEarned}/20 stars!`;
+          feedbackDiv.className = 'text-center text-2xl text-purple-600 font-bold';
+          progressBar.style.width = '100%';
+          progressText.textContent = `Puzzle ${puzzles.length} of ${puzzles.length}`;
+          progressBar.setAttribute('aria-label', `Puzzle ${puzzles.length} of ${puzzles.length}`);
+          nextBtn.textContent = 'Play Again!';
+          nextBtn.classList.remove('hidden');
+          nextBtn.onclick = playAgain;
+        } catch (e) {
+          console.error('Error in showSummary:', e);
+        }
+      }
+
+      function playAgain() {
+        try {
+          console.log('Restarting game');
+          // Reset puzzles to original and shuffle options for each puzzle
+          puzzles = JSON.parse(JSON.stringify(originalPuzzles)).map(puzzle => {
+            puzzle.options = shuffleArray([...puzzle.options]);
+            return puzzle;
+          });
+          currentPuzzle = 0;
+          starsEarned = 0;
+          displayPuzzle();
+        } catch (e) {
+          console.error('Error in playAgain:', e);
+        }
+      }
+
+      // Initial shuffle of options for first playthrough
+      puzzles = puzzles.map(puzzle => {
+        puzzle.options = shuffleArray([...puzzle.options]);
+        return puzzle;
+      });
+
+      displayPuzzle();
+    });
+  </script>
+</body>
+</html>
